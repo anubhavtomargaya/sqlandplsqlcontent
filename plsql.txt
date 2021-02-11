@@ -3324,6 +3324,481 @@ end;
 
 
 
+COLLECTION:
+============
+ 
+COLLECTION is an ARRAY IS USED TO STORE SIMILAR TYPES OF DATA(HOMOGENIOUS)
+         ARRAYS IS USED TO STORE ELEMENTS IN CONTIGUOUS MEMORY LOCATION.
+NOTE:
+=====
+
+COLLECTION INDEX IS ALSO CALLED AS SUBSCRIPT.
+
+COLLECTION INDEX STARTS FROM 1
+
+
+THERE ARE THERE TYPES:
+=====================
+1)VARRAY
+2)INDEX BY TABLE OR ASSOCIATE ARRAYS
+3)NESTED TABLES
+
+
+1)VARRAY:
+----------
+
+VARRAY STANDS FOR VARIABLE-SIZE ARRAY OR VARYING ARRAY TO STORE
+SIMILAR TYPE OF DATA BUT SIZE OF VARRAY IS FIXED.
+
+VARRAY MUST BE DELCARE AND INITIALIZE OR 
+CREATE OBJECT USING CONSTRUCTOR.
+
+
+SYNTAX:
+=======
+
+--DECLARATION OF VARRRAY TYPE
+
+TYPE TYPE_NAME IS VARRAY(SIZE) OF <ELEMENT OF DATA TYPE TO STORE>;
+
+--DELCARE A VARIABLE OF TYPE VARRAY
+variablename   TYPE_NAME
+
+
+
+EX:
+====
+
+CREATE A PROCEDURE TO STORE MULTIPLE INTEGER VALUES IN
+VARRAY TYPE VARIABLE AND DISPLAY THE ELEMENTs FROM VARIABLE.
+
+EX:
+===
+
+CREATE OR REPLACE PROCEDURE T_VAR
+
+IS
+
+TYPE V_ENO  IS VARRAY(10) OF NUMBER;       --DECLARATION OF VARRRAY TYPE
+
+V_NO V_ENO :=V_ENO(10,20,30,40,50);        --DELCARE A VARIABLE OF TYPE VARRAY
+
+BEGIN
+
+DBMS_OUTPUT.PUT_LINE(V_NO(1));              --IT WILL DISPLAY FIRST INDEX VALUE
+
+DBMS_OUTPUT.PUT_LINE(V_NO.COUNT);          -- IT WILL DISPLAY NO ELEMENTS IN VARIABLE
+
+DBMS_OUTPUT.PUT_LINE(V_NO.LIMIT);         -- IT WILL DISPLAY SIZE OF VARRAY
+
+DBMS_OUTPUT.PUT_LINE(V_NO.FIRST);          -- IT WILL DISPLAY FIRST INDEX 
+
+DBMS_OUTPUT.PUT_LINE(V_NO.LAST);             -- IT WILL DISPLAY LAST INDEX STORED
+
+
+FOR I IN 1..V_NO.COUNT LOOP
+
+DBMS_OUTPUT.PUT_LINE(V_NO(I));
+
+END LOOP;
+
+END;
+
+/
+
+
+
+
+1) create a procedure to store som string values into varray variable
+
+ex:
+===
+create or replace procedure t_varray
+is
+type ename_data is varray(10) of varchar2(10);
+
+v_ename ename_data:=ename_data();      
+
+begin
+v_ename.extend;
+v_ename(1):='raju';
+v_ename.extend;
+v_ename(2):='smith';
+v_ename.extend(5);
+v_ename(3):='martin';
+v_ename(4):='sindhu';
+v_ename(5):='harsha';
+v_ename(6):='laxmi';
+v_ename(7):='srileka';
+v_ename.extend(3);
+
+v_ename(8):='balayya';
+v_ename(9):='deeraj';
+v_ename(10):='sravani';
+
+dbms_output.put_line(v_ename.count);
+v_ename.trim(4);                       --it will remove the last four elements.
+
+dbms_output.put_line(v_ename.count);
+
+for i in v_ename.first..v_ename.last loop
+dbms_output.put_line(v_ename(i));
+end loop;
+end;
+/
+
+
+
+
+EXAMPLE2:
+=========
+CREATE A  PROCEDURE TO GET ALL ENAMES FROM EMP TABLE
+AND STORE THESE ENAME VALUES INSIDE VARRAY TYPE VARIABLE
+AND DISPLAY THE ELEMENTS FROM VARRAY VARIABLE.
+
+
+sol:
+====
+create or replace procedure t_varray_ename
+is
+cursor c1 is select ename from emp;
+
+type ename_varray is varray(15) of varchar2(10);
+
+v_ename ename_varray:=ename_varray(); --initialize the varray
+
+v_index number:=1;
+
+begin
+
+for i in c1 loop
+v_ename.extend;
+v_ename(v_index):=i.ename;         --store into varray variable;
+v_index:=v_index+1;
+end loop;
+
+for i in v_ename.first..v_ename.last loop
+dbms_output.put_line(v_ename(i));
+end loop;
+end;
+/
+
+
+
+
+2)INDEX BY TABLE OR ASSOCIATE ARRAY:
+=====================================
+
+INDEX BY TABLE IS  USED TO STORE SIMILAR TYPE OF DATA
+AND IT HAS NO LIMIT TO STORE THE ELEMENTS(UNBOUNDED).
+
+ELEMENTS ARE INSERTED INDEX BASED ON NON-SEQUENTIALLLY INTEGER OR
+NEGATIVE OR Character(single or multiple).
+
+index by table does not require initilaze.
+
+INDEX BY TABLE IS NON-PERSISTANCE OBJECT WE CAN USE THIS
+IN PLSQL ONLY.
+
+WE CAN DELETE A INDIVIAL ELEMENTS.
+
+SYNTAX:
+=======
+
+TYPE TYPE_NAME IS TABLE OF <ELEMENT OF DATATYPE>
+      INDEX BY <DATATYPE>;
+
+VARIABLE TYPE_NAME;
+
+
+EXAMPLE:
+========
+
+CREATE A PROCEDURE TO DELCARE A COLLECTION VARIABLE OF TYPE
+INDEX BY TABLE AND STORE SOME VALUES OF TYPE INTEGER AND
+DISPLAY THE VALUES FROM THAT INDEX BY TABLE OBJECT.
+
+SOL:
+=====
+CREATE OR REPLACE PROCEDURE EX_IN_BY_T
+IS
+
+TYPE MARKS_INT IS TABLE OF NUMBER INDEX BY BINARY_INTEGER;                 --EXPLICITLY SPECIFY THE INDEX TO STORE
+
+V_M MARKS_INT;
+
+BEGIN
+
+V_M(1):=10;
+V_M(2):=40;
+V_M(3):=50;
+V_M(4):=60;
+V_M(5):=80;
+
+FOR I IN V_M.FIRST..V_M.LAST LOOP
+
+DBMS_OUTPUT.PUT_LINE(V_M(I));
+
+END LOOP;
+
+END;
+
+/
+
+
+EXAMPLE:
+========
+CREATE A PROCEDURE TO DELCARE A COLLECTION VARIABLE OF TYPE
+INDEX BY TABLE AND STORE SOME VALUES OF TYPE INTEGER AND
+DISPLAY THE VALUES FROM THAT INDEX BY VARCHAR2.
+
+
+SOL:
+=====
+
+CREATE OR REPLACE PROCEDURE EX_IN_BY_v
+IS
+
+TYPE MARKS_INT IS TABLE OF NUMBER INDEX BY VARCHAR2(3);               --EXPLICITLY SPECIFY THE INDEX TO STORE
+
+V_M MARKS_INT;
+BEGIN
+
+V_M('AAA'):=10;
+V_M('BBB'):=40;
+V_M('CCC'):=50;
+V_M('DDD'):=60;
+V_M('EEE'):=80;
+
+DBMS_OUTPUT.PUT_LINE(V_M('AAA'));
+
+END;
+/
+
+
+
+
+NESTED TABLE:
+=============
+NESTED TABLES IS LIKE A DATABASE TABLE WHICH HAS NO LIMIT TO STORE
+ELEMENTS.
+
+ELEMENTS ARE INSERTED WTIH THE START INDEX 1.
+
+NESTED TABLE IS A TABLE WITH IN A TABLE.
+
+
+NESTED TABLE VARIABLE MUST BE DECLARE AND INITIALIZE.
+PE
+IN NESTED TABLE WE CAN DELETE INDIVIDUAL ELEMENT
+
+WE USE THIS NESTED TABLE IN SQL AS WELL AS PLSQL.
+
+EXTEND IS A METHOD TO ADD A EMPTY SPACE TO INSERT AN EMLEMENT
+THIS MUST BE THE FIRST .
+
+
+SYNTAX:
+========
+
+TYPE TYPE_NAME IS TABLE OF <ELEMENT DATATYPE>;
+
+VARIABLNAME TYPE_NAME:=TYPE_NAME();---EMPTY INITIALIZATION
+
+OR
+
+VARIABLNAME TYPE_NAME:=TYPE_NAME(VALUES,...VALUES);---INITIALIZATION
+
+
+EXAMPLE1:
+==========
+
+
+CREATE PROCEDURE TO DELCARE COLLECTION VARIABLE OF TYPE NESTED TABLE
+AND STORE STRING ELEMENTS INSIDE THAT VARIABLE
+AND DISPLAY THE ELEMENTS FROM NESTED TABLE VARIABLE
+AND PERFROM ALL OPERTAIONS USING COLLECTION METHODS.
+
+SOL:
+====
+CREATE OR REPLACE PROCEDURE EX_ON_NT
+IS
+TYPE  NESTED_VARCHAR IS TABLE  OF VARCHAR2(10);
+V_NAME NESTED_VARCHAR:=NESTED_VARCHAR();--DECLARE AND INITIAIZE
+BEGIN
+V_NAME.EXTEND(10);
+V_NAME(1):='SMITH';
+V_NAME(2):='HARSHA';
+V_NAME(3):='VIJAY';
+V_NAME(4):='LAXMI';
+V_NAME(5):='DIVYA';
+V_NAME(6):='SUPRIYA';
+V_NAME(7):='KOKILA';
+V_NAME(8):='VEDA';
+V_NAME(9):='PADMINI';
+V_NAME(10):='ABINAV';
+DBMS_OUTPUT.PUT_LINE(V_NAME.COUNT);
+DBMS_OUTPUT.PUT_LINE(V_NAME.FIRST);
+DBMS_OUTPUT.PUT_LINE(V_NAME.LAST);
+DBMS_OUTPUT.PUT_LINE(V_NAME.LIMIT);
+ 
+FOR I IN V_NAME.FIRST..V_NAME.LAST LOOP
+ DBMS_OUTPUT.PUT_LINE(V_NAME(I));
+  END LOOP;
+ V_NAME.DELETE(1);
+
+DBMS_OUTPUT.PUT_LINE('AFTER DELETE COUNT IS '||V_NAME.COUNT);
+
+FOR I IN V_NAME.FIRST..V_NAME.LAST LOOP
+ DBMS_OUTPUT.PUT_LINE(V_NAME(I));
+  END LOOP;
+END;
+/
+
+INTERNALLY THE VALUES WILL STORE INSIDE V_NAME:
+===============================================
+
+V_NAME
+
+------------------------------------------------------------------
+|SMITH|HARSHA|VIJAY|LAXMI|DIVYA|SUPRIYA|KOKILA|VEDA|PADMINI|ABINAV|
+------------------------------------------------------------------
+  1	2	3    4     5      6       7     8     9       10
+                   CONTIGUOUS MEOMRY LOCATION.
+
+EXAMPLE:
+========
+
+CREATE A PROCEDURE TO DELCARE A COLLECTION VARIABLE OF NESTED TYPE
+AND GET ALL RECORD  FROM EMP AND STORE EMPNO,ENAME,SAL COLUMN
+ VALUES INSIDE NESTED TYPE VARIABLE AND DISPLAY THE VALUES
+FROM THE NESTED TYPE VARIABLE.
+
+
+SOL:
+====
+
+
+CREATE OR REPLACE PROCEDURE EX_ON_NT_EMP
+IS
+
+TYPE ALL_EMP IS TABLE OF EMP%ROWTYPE;
+V_RES ALL_EMP:=ALL_EMP();
+CURSOR C1 IS SELECT * FROM EMP;
+V_INDEX  NUMBER:=1;
+
+BEGIN
+
+FOR I IN C1 LOOP
+V_RES.EXTEND;
+
+SELECT * INTO V_RES(V_INDEX) FROM EMP
+WHERE EMPNO=I.EMPNO;
+
+V_INDEX:=V_INDEX+1;
+
+END LOOP;
+
+FOR I IN V_RES.FIRST..V_RES.LAST LOOP
+
+DBMS_OUTPUT.PUT_LINE(V_RES(I).EMPNO||' '||V_RES(I).ENAME
+                      ||''||V_RES(I).SAL);
+END LOOP;
+END;
+/
+
+
+collections methods:
+====================
+
+COUNT
+------
+Returns the number of elements that a collection currently contains, 
+which is useful because the current size of a collection is not always known. You can use COUNT wherever an integer expression is allowed. For varrays, COUNT always equals LAST. For nested tables, normally, COUNT equals LAST. But, if you delete elements from the middle of a nested table, COUNT is smaller than LAST.
+
+DELETE
+------
+This procedure has three forms. 
+DELETE removes all elements from a collection. 
+DELETE(n) removes the nth element from an associative array or
+ nested table. If n is null, DELETE(n) does nothing.
+ DELETE(m,n) removes all elements in the range m..n from 
+an associative array or nested table. 
+If m is larger than n or if m or n is null, DELETE(m,n) does nothing.
+
+EXISTS
+-------
+EXISTS(n) returns TRUE if the nth element in a collection exists.
+ Otherwise, EXISTS(n) returns FALSE.
+ Mainly, you use EXISTS with DELETE to maintain sparse nested tables.
+ You can also use EXISTS to avoid raising an exception 
+  when you reference a nonexistent element. 
+  When passed an out-of-range subscript, EXISTS returns FALSE instead of raising SUBSCRIPT_OUTSIDE_LIMIT.
+
+EXTEND
+=-----=
+
+This procedure has three forms.
+EXTEND appends one null element to a collection. 
+EXTEND(n) appends n null elements to a collection. 
+EXTEND(n,i) appends n copies of the ith element to a collection. 
+EXTEND operates on the internal size of a collection. 
+If EXTEND encounters deleted elements, 
+it includes them in its tally. 
+You cannot use EXTEND with associative arrays.
+
+FIRST, LAST
+------------
+
+FIRST and LAST return the first and last (smallest and largest)
+subscript values in a collection. 
+The subscript values are usually integers, 
+but can also be strings for associative arrays. 
+If the collection is empty, FIRST and LAST return NULL. 
+If the collection contains only one element, 
+
+FIRST and LAST return the same subscript value.
+
+For varrays, FIRST always returns 1 and LAST always equals COUNT. 
+For nested tables, normally, LAST equals COUNT. 
+But, if you delete elements from the middle of a nested table, 
+LAST is larger than COUNT.
+
+
+LIMIT
+-----
+
+For nested tables, which have no maximum size, 
+LIMIT returns NULL. 
+For varrays, LIMIT returns the maximum number of elements 
+that a varray can contain 
+(which you must specify in its type definition).
+
+NEXT, PRIOR
+------------
+PRIOR(n) returns the subscript that precedes index n in a collection. 
+NEXT(n) returns the subscript that succeeds index n. 
+If n has no predecessor, PRIOR(n) returns NULL. 
+Likewise, if n has no successor, NEXT(n) returns NULL.
+
+TRIM
+----
+
+This procedure has two forms. 
+TRIM removes one element from the end of a collection.
+ TRIM(n) removes n elements from the end of a collection. 
+If n is greater than COUNT, TRIM(n) raises SUBSCRIPT_BEYOND_COUNT. 
+You cannot use TRIM with index-by tables.
+TRIM operates on the internal size of a collection. 
+If TRIM encounters deleted elements, it includes them in its tally.
+
+
+
+
+
+
+
+
 
 
 
